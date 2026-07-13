@@ -1,39 +1,41 @@
 # Everything Use Codex
 
-Give every app a local Codex runtime.
+**简体中文** | [English](README.en.md)
 
-## Why this project matters
+让每一个 App，都能使用用户本地的 Codex。
 
-AI products spend a surprising amount of work rebuilding the same backend: model access, streaming, tool execution, local files, task cancellation, session recovery, permissions, and usage management. Product teams repeat that work before they can test the interaction that made their idea interesting.
+## 这个项目为什么值得存在
 
-Everything Use Codex moves that shared execution layer onto the user's computer. An app collects context, describes a task, and hands it to the Codex installation the user already has. The product team can focus on how people express intent and how results fit their workflow.
+做一个 AI 产品，团队往往还没来得及验证真正有意思的交互，就要先搭一套重复的技术底座：模型接入、流式输出、工具调用、本地文件访问、任务中止、会话恢复、权限控制、用量管理。
 
-This changes the economics of small AI products:
+Everything Use Codex 把这层执行能力放到用户自己的电脑上。App 负责收集 Context、描述任务和展示结果，具体执行交给用户已经安装并登录的 Codex。产品团队可以把时间花在用户怎样表达意图、结果怎样进入工作流，而不是反复维护 Agent 后端。
 
-- Developers do not have to operate a centralized inference backend for every experiment.
-- Users can reuse their existing Codex environment, project instructions, tools, and included plan usage.
-- Sensitive project files stay in the local execution path unless Codex or an enabled tool sends them elsewhere.
-- A lightweight context app can still perform real work: inspect repositories, edit files, run commands, and continue a thread.
-- Many frontends can share one open protocol instead of inventing their own agent loop.
+这会改变轻量 AI 产品的开发方式：
 
-The long-term goal is an ecosystem of context apps. Each app contributes a focused interaction, a task schema, a permission request, and a result view. Everything Use Codex supplies the execution contract underneath them.
+- 开发者无需为每个实验单独运营一套集中式推理后端。
+- 用户可以继续使用已有的 Codex 环境、项目规则、工具和套餐内用量。
+- 项目文件沿着本地执行链路流转；只有 Codex 或用户启用的工具需要时，相关内容才会离开本机。
+- 一个很轻的 Context App，也可以检查仓库、修改文件、执行命令并延续会话。
+- 不同前端可以共用一套开放协议，不必各自重写 Agent Loop。
 
-Codex usage remains subject to the user's OpenAI plan, limits, and current terms. This project reduces duplicated API infrastructure and product-side inference cost; it does not promise unlimited or permanently free model usage.
+我们希望它最终长成一套 Context App 生态。每个 App 提供一个专注的交互方式、一份任务结构、一组权限声明和一种结果视图；Everything Use Codex 为它们提供共同的执行契约。
 
-## What it provides
+Codex 的实际用量仍受用户的 OpenAI 套餐、额度和当期规则约束。本项目减少重复的 API 基础设施和产品方承担的集中推理成本，不承诺无限或永久免费的模型调用。
 
-Everything Use Codex currently ships three layers:
+## 它提供什么
 
-1. A versioned JSON-RPC protocol for tasks, events, errors, permissions, and lifecycle.
-2. A Rust runtime that starts the local Codex CLI and turns its JSONL stream into stable events.
-3. A TypeScript SDK for local Node.js environments, including Next.js servers and Electron main processes.
+当前版本包含三层：
 
-Each host app starts its own runtime process. The runtime exits with the host and listens on no network port.
+1. 一套带版本的 JSON-RPC 协议，定义任务、事件、错误、权限和生命周期。
+2. 一个 Rust Runtime，负责启动本地 Codex CLI，并把 JSONL 输出转换成稳定事件。
+3. 一个 TypeScript SDK，服务本机 Node.js 环境，包括 Next.js 服务端和 Electron 主进程。
+
+每个宿主 App 启动自己的 Runtime 进程。App 退出时，Runtime 随之结束；整个过程不监听网络端口。
 
 ```text
-Next.js local server / Electron / Tauri / native app
+本机 Next.js 服务端 / Electron / Tauri / 原生 App
                          │
-                  language SDK
+                     对应语言 SDK
                          │ JSON-RPC 2.0 over stdio
                          ▼
             everything-codex-runtime
@@ -42,41 +44,41 @@ Next.js local server / Electron / Tauri / native app
                     Codex CLI
 ```
 
-The process boundary keeps crashes isolated and leaves room for future Swift, .NET, and Rust SDKs. A later localhost companion can reuse the same task service and protocol with a different transport.
+进程边界能够隔离崩溃，也方便后续增加 Swift、.NET 和 Rust SDK。未来的 localhost Companion 仍可复用同一套任务服务与协议，只替换通信方式。
 
-## Current status
+## 当前状态
 
-The project is an early `0.1.0` foundation. It supports:
+项目目前处于 `0.1.0` 早期阶段，已经支持：
 
-- macOS and Windows build targets
-- Codex availability checks
-- new and resumed Codex threads
-- streaming text and command events
-- task status and cancellation
-- read-only, workspace-write, and full-access sandbox requests
-- workspace validation
-- TypeScript types and JSON Schema
+- macOS 和 Windows 构建目标
+- Codex 可用性检查
+- 新建和恢复 Codex thread
+- 流式文本与命令事件
+- 任务状态查询和中止
+- `read-only`、`workspace-write`、`danger-full-access` 三档沙箱权限
+- workspace 校验
+- TypeScript 类型和 JSON Schema
 
-The first release targets apps whose server process runs on the user's machine. A browser-only deployment cannot start local processes by itself.
+第一版面向服务端进程运行在用户电脑上的 App。纯浏览器页面无法自行启动本地进程，需要本机服务端或桌面宿主承接 SDK。
 
-## Repository layout
+## 仓库结构
 
 ```text
-crates/codex-adapter    Codex arguments, process startup, JSONL translation
-crates/runtime          stdio JSON-RPC runtime and task lifecycle
-packages/protocol       TypeScript protocol types and JSON Schema
+crates/codex-adapter    Codex 参数、进程启动与 JSONL 翻译
+crates/runtime          stdio JSON-RPC Runtime 与任务生命周期
+packages/protocol       TypeScript 协议类型与 JSON Schema
 packages/sdk-typescript Node.js SDK
-examples/node-basic     minimal integration without a UI
+examples/node-basic     无 UI 的最小接入示例
 ```
 
-## Build from source
+## 从源码构建
 
-Requirements:
+环境要求：
 
 - Rust stable
-- Node.js 22 or later
+- Node.js 22 或更高版本
 - pnpm 10
-- Codex CLI installed and signed in for real task execution
+- 执行真实任务时，需要安装并登录 Codex CLI
 
 ```bash
 pnpm install
@@ -84,17 +86,17 @@ cargo build --release -p everything-codex-runtime
 pnpm build
 ```
 
-The runtime binary will be at:
+Runtime 二进制文件位于：
 
 ```text
 target/release/everything-codex-runtime
 ```
 
-On Windows it has an `.exe` suffix.
+Windows 版本带有 `.exe` 后缀。
 
-## TypeScript quick start
+## TypeScript 快速开始
 
-During local development, point the SDK at the compiled runtime:
+本地开发时，把编译后的 Runtime 路径传给 SDK：
 
 ```ts
 import { createRuntime } from "@everything-use-codex/sdk";
@@ -108,53 +110,53 @@ console.log(codex.version);
 
 const task = await runtime.startTask({
   workspace: "/absolute/path/to/project",
-  prompt: "Inspect this project and explain its architecture.",
+  prompt: "检查这个项目并说明它的架构。",
   sandbox: "read-only",
 });
 
 task.onEvent((event) => {
   if (event.type === "text_delta") process.stdout.write(event.text);
-  if (event.type === "completed") console.log("\nDone", event.thread_id);
+  if (event.type === "completed") console.log("\n完成", event.thread_id);
 });
 
 await runtime.close();
 ```
 
-For packaged apps, ship the matching runtime binary as an application resource and pass its absolute path to `createRuntime()`.
+打包 App 时，把对应平台的 Runtime 二进制文件放入应用资源，再将它的绝对路径传给 `createRuntime()`。
 
-## Protocol example
+## 协议示例
 
-Every stdin and stdout line is one JSON-RPC message.
+stdin 和 stdout 每一行都是一条完整的 JSON-RPC 消息。
 
 ```json
 {"jsonrpc":"2.0","id":1,"method":"runtime/initialize","params":{"protocolVersion":"1.0"}}
 ```
 
 ```json
-{"jsonrpc":"2.0","id":2,"method":"task/start","params":{"prompt":"Explain this repository","workspace":"/project","sandbox":"read-only"}}
+{"jsonrpc":"2.0","id":2,"method":"task/start","params":{"prompt":"说明这个仓库的结构","workspace":"/project","sandbox":"read-only"}}
 ```
 
-Runtime events arrive as notifications:
+Runtime 通过通知发送事件：
 
 ```json
-{"jsonrpc":"2.0","method":"task/event","params":{"taskId":"task-id","event":{"type":"text_delta","text":"I found..."}}}
+{"jsonrpc":"2.0","method":"task/event","params":{"taskId":"task-id","event":{"type":"text_delta","text":"我发现……"}}}
 ```
 
-The TypeScript definitions live in [`packages/protocol`](packages/protocol), and the machine-readable schema is [`protocol.schema.json`](packages/protocol/schema/protocol.schema.json).
+TypeScript 类型位于 [`packages/protocol`](packages/protocol)，机器可读的 Schema 位于 [`protocol.schema.json`](packages/protocol/schema/protocol.schema.json)。
 
-## Security model
+## 安全模型
 
-- The runtime communicates only with its parent process over stdin and stdout.
-- Logs go to stderr, keeping protocol output machine-readable.
-- Workspaces must be existing absolute directories.
-- Filesystem roots and the user's home root are rejected as workspaces.
-- The SDK defaults to `workspace-write`.
-- `danger-full-access` requires an explicit host request.
-- Prompts, credentials, and file contents are not persisted by this runtime.
+- Runtime 只通过 stdin 和 stdout 与父进程通信。
+- 日志写入 stderr，确保协议输出始终可以被机器解析。
+- workspace 必须是已经存在的绝对路径。
+- 文件系统根目录和用户 home 根目录不能作为 workspace。
+- SDK 默认使用 `workspace-write`。
+- 宿主必须显式请求 `danger-full-access`。
+- Runtime 不持久化 prompt、凭证和文件内容。
 
-The host app remains responsible for showing an appropriate user confirmation before requesting sensitive capabilities.
+宿主 App 在请求敏感权限前，仍需向用户展示清晰的确认信息。
 
-## Development
+## 开发与验证
 
 ```bash
 cargo fmt --all -- --check
@@ -163,19 +165,19 @@ cargo test --workspace
 pnpm check
 ```
 
-CI runs the same checks on macOS and Windows.
+持续集成会在 macOS 和 Windows 上执行同一组检查。
 
-## Roadmap
+## 路线图
 
-- Package signed runtime binaries for macOS and Windows
-- Add end-to-end fixtures for process termination on Windows
-- Publish the TypeScript SDK to npm
-- Add Tauri, Swift, and .NET host adapters
-- Add an authenticated localhost WebSocket transport for browser-based context apps
+- 为 macOS 和 Windows 打包经过签名的 Runtime 二进制文件
+- 增加 Windows 进程终止的端到端测试夹具
+- 将 TypeScript SDK 发布到 npm
+- 增加 Tauri、Swift 和 .NET 宿主适配器
+- 为浏览器 Context App 增加带鉴权的 localhost WebSocket transport
 
-## Contributing
+## 参与贡献
 
-Issues and pull requests are welcome. Keep protocol changes backward-compatible whenever possible, add tests for new Codex events, and keep transport code separate from task execution.
+欢迎提交 Issue 和 Pull Request。修改协议时尽量保持向后兼容；增加新的 Codex 事件时补齐测试；通信层与任务执行层继续保持分离。
 
 ## License
 

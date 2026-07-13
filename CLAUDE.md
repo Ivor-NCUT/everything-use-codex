@@ -16,6 +16,7 @@
 - `packages/sdk-typescript`：供 Next.js 本机服务端、Electron 和 Node.js 使用的 SDK。
 - `examples/node-basic`：最小无 UI 接入示例。
 - `docs/superpowers/specs`：经过确认的设计规格。
+- `README.md`：默认中文说明；`README.en.md`：内容对应的英文说明。
 
 ## 架构约束
 
@@ -33,4 +34,3 @@ cargo clippy --all-targets -- -D warnings
 cargo test --workspace
 pnpm check
 ```
-
