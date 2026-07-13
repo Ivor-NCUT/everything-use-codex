@@ -7,7 +7,6 @@
     "build": "pnpm --filter './packages/**' build",
     "typecheck": "pnpm --filter './packages/**' typecheck",
     "test": "pnpm --filter './packages/**' test",
-    "check": "pnpm typecheck && pnpm test && pnpm build"
+    "check": "pnpm build && pnpm typecheck && pnpm test"
   }
 }
-
