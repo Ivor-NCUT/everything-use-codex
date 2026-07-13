@@ -1,0 +1,15 @@
+{
+  "name": "@everything-use-codex/example-node-basic",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "tsx src/index.ts"
+  },
+  "dependencies": {
+    "@everything-use-codex/sdk": "workspace:*"
+  },
+  "devDependencies": {
+    "tsx": "^4.20.6"
+  }
+}
+

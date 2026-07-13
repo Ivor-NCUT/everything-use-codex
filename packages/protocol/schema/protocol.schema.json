@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://everything-use-codex.dev/schema/protocol.schema.json",
+  "title": "Everything Use Codex Protocol",
+  "oneOf": [
+    { "$ref": "#/$defs/request" },
+    { "$ref": "#/$defs/success" },
+    { "$ref": "#/$defs/failure" },
+    { "$ref": "#/$defs/taskEvent" }
+  ],
+  "$defs": {
+    "request": {
+      "type": "object",
+      "required": ["jsonrpc", "id", "method", "params"],
+      "properties": {
+        "jsonrpc": { "const": "2.0" },
+        "id": { "type": "integer" },
+        "method": { "type": "string" },
+        "params": { "type": "object" }
+      },
+      "additionalProperties": false
+    },
+    "success": {
+      "type": "object",
+      "required": ["jsonrpc", "id", "result"],
+      "properties": {
+        "jsonrpc": { "const": "2.0" },
+        "id": { "type": "integer" },
+        "result": {}
+      },
+      "additionalProperties": false
+    },
+    "failure": {
+      "type": "object",
+      "required": ["jsonrpc", "id", "error"],
+      "properties": {
+        "jsonrpc": { "const": "2.0" },
+        "id": { "type": ["integer", "null"] },
+        "error": {
+          "type": "object",
+          "required": ["code", "message"],
+          "properties": {
+            "code": { "type": "integer" },
+            "message": { "type": "string" },
+            "data": { "type": "object" }
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "taskEvent": {
+      "type": "object",
+      "required": ["jsonrpc", "method", "params"],
+      "properties": {
+        "jsonrpc": { "const": "2.0" },
+        "method": { "const": "task/event" },
+        "params": {
+          "type": "object",
+          "required": ["taskId", "event"],
+          "properties": {
+            "taskId": { "type": "string", "minLength": 1 },
+            "event": {
+              "type": "object",
+              "required": ["type"],
+              "properties": { "type": { "type": "string" } }
+            }
+          }
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}
+
